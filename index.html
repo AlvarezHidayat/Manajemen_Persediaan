@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Sistem Manajemen Persediaan untuk mengelola produk dan stok dengan efisien." />
+<title>Sistem Manajemen Persediaan</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --danger: #ef476f;
+        --warning: #ffd166;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: #f5f7fb;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Login Page */
+    .login-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--light);
+        padding: 20px;
+    }
+
+    .login-box {
+        width: 400px;
+        padding: 40px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-logo {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .login-logo i {
+        font-size: 3rem;
+        color: var(--primary);
+    }
+
+    .login-logo h2 {
+        color: var(--dark);
+        margin-top: 10px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 500;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: border 0.3s;
+    }
+
+    .input-group input:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        background-color: var(--primary);
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: var(--secondary);
+    }
+
+    /* Main App */
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        background-color: var(--dark);
+        color: white;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding-top: 20px;
+        transition: all 0.3s;
+        z-index: 999;
+    }
+
+    .app-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+
+    .app-logo i {
+        font-size: 2rem;
+        margin-right: 10px;
+        color: var(--success);
+    }
+
+    .app-logo h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .nav-menu {
+        list-style: none;
+    }
+
+    .nav-item {
+        margin-bottom: 5px;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: #b3b3b3;
+        text-decoration: none;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .nav-link i {
+        margin-right: 10px;
+        font-size: 1.1rem;
+    }
+
+    .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: all 0.3s;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--dark);
+    }
+
+    .search-box {
+        flex: 1;
+        margin: 0 20px;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 10px 15px;
+        padding-left: 40px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .user-info .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-weight: 600;
+        user-select: none;
+    }
+
+    .user-info .dropdown {
+        position: absolute;
+        right: 0;
+        top: 55px;
+        width: 180px;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        z-index: 999;
+        display: none;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-menu a {
+        display: block;
+        padding: 8px 15px;
+        color: var(--dark);
+        text-decoration: none;
+        transition: background-color 0.3s;
+        font-size: 14px;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f5f7fb;
+    }
+
+    .dropdown-menu a i {
+        margin-right: 10px;
+        color: #777;
+    }
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+    }
+
+    .card-stat {
+        display: flex;
+        align-items: center;
+    }
+
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+
+    .card-info h3 {
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+
+    .card-info p {
+        color: #777;
+        font-size: 0.9rem;
+    }
+
+    .product-section {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+        font-size: 1.2rem;
+        color: var(--dark);
+    }
+
+    .btn-add {
+        padding: 8px 15px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .btn-add i {
+        margin-right: 5px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th,
+    table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    table tbody tr:hover {
+        background-color: #f5f7fb;
+    }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        user-select: none;
+    }
+
+    .status-in-stock {
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success);
+    }
+
+    .status-low {
+        background-color: rgba(255, 209, 102, 0.1);
+        color: var(--warning);
+    }
+
+    .status-out {
+        background-color: rgba(239, 71, 111, 0.1);
+        color: var(--danger);
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 5px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 14px;
+        user-select: none;
+    }
+
+    .btn-edit {
+        background-color: rgba(255, 209, 102, 0.1);
+        color: var(--warning);
+    }
+
+    .btn-delete {
+        background-color: rgba(239, 71, 111, 0.1);
+        color: var(--danger);
+    }
+
+    .btn-stock {
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success);
+    }
+
+    .btn-icon:hover {
+        opacity: 0.8;
+    }
+
+    /* Stock Update Controls */
+    .stock-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stock-input {
+        width: 80px;
+        padding: 5px 8px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        text-align: center;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 3px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .btn-sm:hover {
+        opacity: 0.8;
+    }
+
+    /* Reports Charts */
+    .chart-container {
+        height: 300px;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .report-filter {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .filter-group label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--dark);
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .btn-filter {
+        padding: 8px 16px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 20px;
+    }
+
+    .btn-export {
+        padding: 8px 16px;
+        background-color: var(--success);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: 10px;
+    }
+
+    .report-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .summary-card h4 {
+        color: var(--primary);
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .summary-card p {
+        color: #777;
+        font-size: 0.9rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal {
+        width: 500px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        font-size: 1.2rem;
+        color: var(--dark);
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #777;
+        user-select: none;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+        color: white;
+    }
+
+    .btn-success {
+        background-color: var(--success);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .sidebar {
+            left: -250px;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .menu-toggle {
+            display: block;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .main-content.active {
+            margin-left: 250px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-cards {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .search-box {
+            display: none;
+        }
+
+        .main-content.active {
+            margin-left: 0;
+            position: relative;
+        }
+
+        .sidebar.active {
+            width: 100%;
+        }
+
+        .report-filter {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .stock-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+
+    /* Alert Messages */
+    .alert {
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .alert i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    .alert-success {
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success);
+    }
+
+    .alert-danger {
+        background-color: rgba(239, 71, 111, 0.1);
+        color: var(--danger);
+    }
+
+    .alert-warning {
+        background-color: rgba(255, 209, 102, 0.1);
+        color: var(--warning);
+    }
+
+    /* Chart styles */
+    .chart-placeholder {
+        height: 250px;
+        background-color: #f8f9fa;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #777;
+        font-size: 16px;
+    }
+</style>
+</head>
+<body>
+<!-- Login Screen -->
+<div id="login-screen" class="login-container">
+    <div class="login-box">
+        <div class="login-logo">
+            <i class="fas fa-boxes"></i>
+            <h2>Sistem Manajemen Persediaan</h2>
+        </div>
+        <div id="login-alert" class="alert alert-danger hidden" role="alert" aria-live="assertive">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Username atau password salah!</span>
+        </div>
+        <form id="login-form" aria-label="Form login sistem">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Masukkan username"
+                    required
+                    aria-required="true"
+                    aria-describedby="username-desc"
+                    autocomplete="username"
+                />
+                <small id="username-desc" class="hidden">Masukkan username Anda</small>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Masukkan password"
+                    required
+                    aria-required="true"
+                    aria-describedby="password-desc"
+                    autocomplete="current-password"
+                />
+                <small id="password-desc" class="hidden">Masukkan password Anda</small>
+            </div>
+            <button type="submit" class="btn" aria-label="Tombol login">Login</button>
+        </form>
+    </div>
+</div>
+
+<!-- Main App -->
+<div id="app" class="container hidden" tabindex="-1" aria-label="Sistem Manajemen Persediaan">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar" aria-label="Navigasi utama">
+        <div class="app-logo" aria-label="Logo aplikasi">
+            <i class="fas fa-boxes" aria-hidden="true"></i>
+            <h2>Inventory System</h2>
+        </div>
+        <ul class="nav-menu" role="menu">
+            <li class="nav-item" role="none">
+                <a href="#" class="nav-link active" data-page="dashboard" role="menuitem" tabindex="0" aria-current="page">
+                    <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="#" class="nav-link" data-page="products" role="menuitem" tabindex="0">
+                    <i class="fas fa-box" aria-hidden="true"></i>
+                    <span>Produk</span>
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="#" class="nav-link" data-page="categories" role="menuitem" tabindex="0">
+                    <i class="fas fa-tags" aria-hidden="true"></i>
+                    <span>Kategori</span>
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="#" class="nav-link" data-page="stock" role="menuitem" tabindex="0">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i>
+                    <span>Stok</span>
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="#" class="nav-link" data-page="reports" role="menuitem" tabindex="0">
+                    <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                    <span>Laporan</span>
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="#" class="nav-link" data-page="settings" role="menuitem" tabindex="0">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content" tabindex="0">
+        <div class="top-bar" role="toolbar" aria-label="Toolbar utama">
+            <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu sidebar">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="search-box">
+                <label for="search" class="sr-only">Cari</label>
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input type="search" id="search" placeholder="Cari..." aria-label="Cari produk, kategori, dll." />
+            </div>
+            <div class="user-info" aria-haspopup="true" aria-expanded="false">
+                <div class="avatar" aria-label="Avatar user">A</div>
+                <button id="user-dropdown-toggle" aria-controls="user-dropdown" aria-expanded="false" aria-haspopup="true" class="dropdown-toggle" aria-label="Menu pengguna admin">
+                    <span>Admin</span>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                </button>
+                <div id="user-dropdown" class="dropdown dropdown-menu" role="menu" aria-label="Menu pengguna">
+                    <a href="#" role="menuitem" tabindex="-1"><i class="fas fa-user" aria-hidden="true"></i> Profil</a>
+                    <a href="#" role="menuitem" tabindex="-1"><i class="fas fa-cog" aria-hidden="true"></i> Pengaturan</a>
+                    <a href="#" id="logout-btn" role="menuitem" tabindex="-1"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pages -->
+
+        <!-- Dashboard Page -->
+        <section id="dashboard" class="page" aria-label="Halaman dashboard">
+            <div class="dashboard-cards">
+                <div class="card" tabindex="0">
+                    <div class="card-stat">
+                        <div class="card-icon">
+                            <i class="fas fa-box" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="total-products">0</h3>
+                            <p>Total Produk</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" tabindex="0">
+                    <div class="card-stat">
+                        <div
+                          class="card-icon"
+                          style="background-color: rgba(76, 201, 240, 0.1); color: var(--success)"
+                        >
+                            <i class="fas fa-layer-group" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="total-stock">0</h3>
+                            <p>Total Stok</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" tabindex="0">
+                    <div class="card-stat">
+                        <div
+                          class="card-icon"
+                          style="background-color: rgba(255, 209, 102, 0.1); color: var(--warning)"
+                        >
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="low-stock">0</h3>
+                            <p>Stok Menipis</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" tabindex="0">
+                    <div class="card-stat">
+                        <div
+                          class="card-icon"
+                          style="background-color: rgba(239, 71, 111, 0.1); color: var(--danger)"
+                        >
+                            <i class="fas fa-times-circle" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="out-stock">0</h3>
+                            <p>Stok Habis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Page -->
+        <section id="products" class="page hidden" aria-label="Halaman produk">
+            <div class="product-section">
+                <div class="section-header" style="justify-content: space-between;">
+                    <h2>Daftar Produk</h2>
+                    <button class="btn-add" id="btn-open-add-product" aria-label="Tambah produk baru">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Tambah Produk
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table aria-describedby="products-desc" aria-live="polite" role="grid">
+                        <caption id="products-desc" class="sr-only">Tabel daftar produk</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nama Produk</th>
+                                <th scope="col">Kategori</th>
+                                <th scope="col">Harga</th>
+                                <th scope="col">Stok</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Data produk akan tampil di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Page -->
+        <section id="categories" class="page hidden" aria-label="Halaman kategori">
+            <div class="product-section">
+                <div class="section-header" style="justify-content: space-between;">
+                    <h2>Daftar Kategori</h2>
+                    <button class="btn-add" id="btn-open-add-category" aria-label="Tambah kategori baru">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Tambah Kategori
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table aria-describedby="categories-desc" aria-live="polite" role="grid">
+                        <caption id="categories-desc" class="sr-only">Tabel daftar kategori</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID Kategori</th>
+                                <th scope="col">Nama Kategori</th>
+                                <th scope="col">Deskripsi</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-table-body">
+                            <!-- Data kategori akan tampil di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stock Page -->
+        <section id="stock" class="page hidden" aria-label="Halaman kelola stok">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Kelola Stok</h2>
+                </div>
+                <div class="table-responsive">
+                    <table aria-describedby="stock-desc" aria-live="polite" role="grid">
+                        <caption id="stock-desc" class="sr-only">Tabel kelola stok produk</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID Produk</th>
+                                <th scope="col">Nama Produk</th>
+                                <th scope="col">Stok Saat Ini</th>
+                                <th scope="col">Penyesuaian</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-table-body">
+                            <!-- Data stok produk akan tampil di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        
+        <!-- Reports Page -->
+        <section id="reports" class="page hidden" aria-label="Halaman laporan persediaan">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Laporan Persediaan</h2>
+                    <button class="btn-add" id="btn-generate-report">
+                        <i class="fas fa-file-download" aria-hidden="true"></i> Generate Laporan
+                    </button>
+                </div>
+                
+                <div class="report-summary">
+                    <div class="summary-card">
+                        <h3 id="report-total-products">0</h3>
+                        <p>Total Produk</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3 id="report-total-value">Rp 0</h3>
+                        <p>Total Nilai Persediaan</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3 id="report-low-stock-count">0</h3>
+                        <p>Produk Stok Menipis</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3 id="report-out-stock-count">0</h3>
+                        <p>Produk Stok Habis</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table aria-describedby="reports-desc" aria-live="polite" role="grid">
+                        <caption id="reports-desc" class="sr-only">Tabel laporan persediaan</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID Produk</th>
+                                <th scope="col">Nama Produk</th>
+                                <th scope="col">Stok</th>
+                                <th scope="col">Harga Satuan</th>
+                                <th scope="col">Nilai Total</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table-body">
+                            <!-- Data laporan akan tampil di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+<!-- Settings Page -->
+        <section id="settings" class="page hidden" aria-label="Halaman pengaturan sistem">
+            <div class="product-section">
+                <div class="section-header">
+                    <h2>Pengaturan Sistem</h2>
+                </div>
+                <p style="color: var(--dark);">Pengaturan sistem akan dikembangkan di waktu mendatang.</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal Tambah Produk -->
+<div id="add-product-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="add-product-title" tabindex="-1">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="add-product-title">Tambah Produk Baru</h3>
+            <button type="button" class="modal-close" data-dismiss="modal" aria-label="Tutup">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="add-product-form" aria-label="Form tambah produk">
+                <div class="form-group">
+                    <label for="product-id">ID Produk</label>
+                    <input type="text" id="product-id" required aria-required="true" />
+                </div>
+                <div class="form-group">
+                    <label for="product-name">Nama Produk</label>
+                    <input type="text" id="product-name" required aria-required="true" />
+                </div>
+                <div class="form-group">
+                    <label for="product-category">Kategori</label>
+                    <select id="product-category" required aria-required="true" >
+                        <option value="">Pilih Kategori</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Harga (Rp)</label>
+                    <input type="number" id="product-price" min="0" required aria-required="true" />
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Stok Awal</label>
+                    <input type="number" id="product-stock" min="0" required aria-required="true" />
+                </div>
+                <div class="form-group">
+                    <label for="product-desc">Deskripsi</label>
+                    <textarea id="product-desc" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Batal">Batal</button>
+            <button type="button" class="btn" id="save-product-btn" aria-label="Simpan produk">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Kategori -->
+<div id="add-category-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="add-category-title" tabindex="-1">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="add-category-title">Tambah Kategori Baru</h3>
+            <button type="button" class="modal-close" data-dismiss="modal" aria-label="Tutup">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="add-category-form" aria-label="Form tambah kategori">
+                <div class="form-group">
+                    <label for="category-id">ID Kategori</label>
+                    <input type="text" id="category-id" required aria-required="true" />
+                </div>
+                <div class="form-group">
+                    <label for="category-name">Nama Kategori</label>
+                    <input type="text" id="category-name" required aria-required="true" />
+                </div>
+                <div class="form-group">
+                    <label for="category-desc">Deskripsi</label>
+                    <textarea id="category-desc" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Batal">Batal</button>
+            <button type="button" class="btn" id="save-category-btn" aria-label="Simpan kategori">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+    const USERNAME = "admin";
+    const PASSWORD = "admin123";
+
+    let products = [];
+    let categories = [];
+
+    // Localstorage keys
+    const PRODUCTS_KEY = "products";
+    const CATEGORIES_KEY = "categories";
+
+    // DOM Elements
+    const loginScreen = document.getElementById("login-screen");
+    const app = document.getElementById("app");
+
+    const loginForm = document.getElementById("login-form");
+    const loginAlert = document.getElementById("login-alert");
+
+    const navLinks = document.querySelectorAll(".nav-link");
+    const pages = document.querySelectorAll(".page");
+
+    const userDropdownToggle = document.getElementById("user-dropdown-toggle");
+    const userDropdownMenu = document.getElementById("user-dropdown");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    const btnOpenAddProduct = document.getElementById("btn-open-add-product");
+    const addProductModal = document.getElementById("add-product-modal");
+    const btnSaveProduct = document.getElementById("save-product-btn");
+    const addProductForm = document.getElementById("add-product-form");
+
+    const btnOpenAddCategory = document.getElementById("btn-open-add-category");
+    const addCategoryModal = document.getElementById("add-category-modal");
+    const btnSaveCategory = document.getElementById("save-category-btn");
+    const addCategoryForm = document.getElementById("add-category-form");
+
+    const productsTableBody = document.getElementById("products-table-body");
+    const categoriesTableBody = document.getElementById("categories-table-body");
+
+    const totalProductsEl = document.getElementById("total-products");
+    const totalStockEl = document.getElementById("total-stock");
+    const lowStockEl = document.getElementById("low-stock");
+    const outStockEl = document.getElementById("out-stock");
+
+    // Utils
+    function saveToStorage() {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+    }
+
+    function loadFromStorage() {
+        const storedProducts = localStorage.getItem(PRODUCTS_KEY);
+        const storedCategories = localStorage.getItem(CATEGORIES_KEY);
+        products = storedProducts ? JSON.parse(storedProducts) : [];
+        categories = storedCategories ? JSON.parse(storedCategories) : [];
+    }
+
+    function showAlert(message) {
+        loginAlert.querySelector("span").textContent = message;
+        loginAlert.classList.remove("hidden");
+    }
+
+    function hideAlert() {
+        loginAlert.classList.add("hidden");
+    }
+
+    function checkLogin() {
+        const loggedIn = sessionStorage.getItem("loggedIn");
+        if (loggedIn === "true") {
+            loginScreen.classList.add("hidden");
+            app.classList.remove("hidden");
+            loadFromStorage();
+            renderCategoriesOptions();
+            renderProductsTable();
+            renderCategoriesTable();
+            updateDashboardStats();
+            showPage("dashboard");
+        } else {
+            loginScreen.classList.remove("hidden");
+            app.classList.add("hidden");
+        }
+    }
+
+    // Login form submit
+    loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        hideAlert();
+        const username = loginForm.username.value.trim();
+        const password = loginForm.password.value.trim();
+
+        if (username === USERNAME && password === PASSWORD) {
+            sessionStorage.setItem("loggedIn", "true");
+            checkLogin();
+            loginForm.reset();
+        } else {
+            showAlert("Username atau password salah!");
+        }
+    });
+
+    // Logout
+    logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem("loggedIn");
+        location.reload();
+    });
+
+    // Navigation menu logic
+    navLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            navLinks.forEach(l => l.classList.remove("active"));
+            link.classList.add("active");
+            const targetPage = link.getAttribute("data-page");
+            showPage(targetPage);
+        });
+    });
+
+    function showPage(pageId) {
+        pages.forEach(page => {
+            if(page.id === pageId) page.classList.remove("hidden");
+            else page.classList.add("hidden");
+        });
+    }
+
+    // User dropdown toggle
+    userDropdownToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        userDropdownMenu.classList.toggle("show");
+        // Update aria-expanded attribute
+        let expanded = userDropdownToggle.getAttribute("aria-expanded") === "true";
+        userDropdownToggle.setAttribute("aria-expanded", (!expanded).toString());
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener("click", (e) => {
+        if(!userDropdownToggle.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+            if(userDropdownMenu.classList.contains("show")){
+                userDropdownMenu.classList.remove("show");
+                userDropdownToggle.setAttribute("aria-expanded", "false");
+            }
+        }
+    });
+
+    // Modal Handling
+    function openModal(modal) {
+        modal.classList.remove("hidden");
+        // Focus first input in modal for accessibility
+        const focusable = modal.querySelector("input, select, textarea, button");
+        if(focusable) focusable.focus();
+    }
+    function closeModal(modal) {
+        modal.classList.add("hidden");
+        const form = modal.querySelector("form");
+        if(form) form.reset();
+    }
+
+    // Close modal on clicking close buttons or cancel
+    document.querySelectorAll(".modal-close").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const modal = btn.closest(".modal-backdrop");
+            closeModal(modal);
+        });
+    });
+    document.querySelectorAll("[data-dismiss='modal']").forEach(btn=>{
+        btn.addEventListener("click", (e) => {
+            const modal = btn.closest(".modal-backdrop");
+            closeModal(modal);
+        });
+    });
+
+    // Open add product modal
+    btnOpenAddProduct.addEventListener("click", () => {
+        if(categories.length === 0){
+            alert("Tambahkan kategori terlebih dahulu sebelum menambah produk.");
+            return;
+        }
+        renderCategoriesOptions(); // Refresh categories select before open
+        openModal(addProductModal);
+    });
+
+    // Add product save
+    btnSaveProduct.addEventListener("click", () => {
+        const id = document.getElementById("product-id").value.trim();
+        const name = document.getElementById("product-name").value.trim();
+        const category = document.getElementById("product-category").value;
+        const priceRaw = document.getElementById("product-price").value;
+        const stockRaw = document.getElementById("product-stock").value;
+        const desc = document.getElementById("product-desc").value.trim();
+
+        if(!id || !name || !category || priceRaw === "" || stockRaw === "") {
+            alert("Mohon isi semua data produk dengan benar.");
+            return;
+        }
+
+        const price = Number(priceRaw);
+        const stock = Number(stockRaw);
+
+        if (products.find(p => p.id.toLowerCase() === id.toLowerCase())){
+            alert("ID produk sudah ada, gunakan ID lain.");
+            return;
+        }
+        if (price < 0 || stock < 0) {
+            alert("Harga dan stok tidak boleh kurang dari 0.");
+            return;
+        }
+
+        products.push({id, name, category, price, stock, desc});
+        saveToStorage();
+        renderProductsTable();
+        updateDashboardStats();
+        closeModal(addProductModal);
+    });
+
+    // Render products in table
+    function renderProductsTable() {
+        productsTableBody.innerHTML = "";
+        if(products.length === 0){
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="7" style="text-align:center;">Tidak ada data produk</td>`;
+            productsTableBody.appendChild(tr);
+            return;
+        }
+        products.forEach(product => {
+            const tr = document.createElement("tr");
+            let statusText = "Tersedia";
+            let statusClass = "status-in-stock";
+            if(product.stock <= 0){
+                statusText = "Habis";
+                statusClass = "status-out";
+            } else if(product.stock > 0 && product.stock <= 5){
+                statusText = "Stok Menipis";
+                statusClass = "status-low";
+            }
+            const priceFormatted = "Rp " + product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".");
+            tr.innerHTML = `
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>${getCategoryName(product.category)}</td>
+                <td>${priceFormatted}</td>
+                <td>${product.stock}</td>
+                <td><span class="status ${statusClass}">${statusText}</span></td>
+                <td class="action-btns">
+                    <button class="btn-icon btn-delete" aria-label="Hapus produk ${product.name}" title="Hapus Produk" data-id="${product.id}">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                    </button>
+                </td>
+            `;
+            productsTableBody.appendChild(tr);
+        });
+        // Attach delete event
+        productsTableBody.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                if(confirm("Apakah Anda yakin ingin menghapus produk ini?")){
+                    deleteProduct(id);
+                }
+            });
+        });
+    }
+
+    // Delete product function
+    function deleteProduct(id) {
+        products = products.filter(p=>p.id !== id);
+        saveToStorage();
+        renderProductsTable();
+        updateDashboardStats();
+    }
+
+    // Render categories options in product select dropdown
+    function renderCategoriesOptions() {
+        const select = document.getElementById("product-category");
+        select.innerHTML = `<option value="">Pilih Kategori</option>`;
+        categories.forEach(cat => {
+            const opt = document.createElement("option");
+            opt.value = cat.id;
+            opt.textContent = cat.name;
+            select.appendChild(opt);
+        });
+    }
+
+    // Render categories table
+    function renderCategoriesTable() {
+        categoriesTableBody.innerHTML = "";
+        if(categories.length === 0){
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="4" style="text-align:center;">Tidak ada data kategori</td>`;
+            categoriesTableBody.appendChild(tr);
+            return;
+        }
+        categories.forEach(category => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${category.id}</td>
+                <td>${category.name}</td>
+                <td>${category.desc || "-"}</td>
+                <td>
+                    <button class="btn-icon btn-delete" aria-label="Hapus kategori ${category.name}" title="Hapus Kategori" data-id="${category.id}">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                    </button>
+                </td>
+            `;
+            categoriesTableBody.appendChild(tr);
+        });
+
+        // Attach delete category event
+        categoriesTableBody.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                if(confirm("Apakah Anda yakin ingin menghapus kategori ini?")){
+                    deleteCategory(id);
+                }
+            });
+        });
+    }
+
+    // Add category modal open
+    btnOpenAddCategory.addEventListener("click", () => {
+        openModal(addCategoryModal);
+    });
+
+    // Save new category
+    btnSaveCategory.addEventListener("click", () => {
+        const id = document.getElementById("category-id").value.trim();
+        const name = document.getElementById("category-name").value.trim();
+        const desc = document.getElementById("category-desc").value.trim();
+
+        if(!id || !name){
+            alert("ID dan Nama kategori wajib diisi.");
+            return;
+        }
+        if(categories.some(c => c.id.toLowerCase() === id.toLowerCase())){
+            alert("ID kategori sudah terdaftar, gunakan ID lain.");
+            return;
+        }
+        categories.push({id, name, desc});
+        saveToStorage();
+        renderCategoriesTable();
+        renderCategoriesOptions();
+        closeModal(addCategoryModal);
+    });
+
+    // Get category name by id
+    function getCategoryName(catId){
+        const cat = categories.find(c => c.id === catId);
+        return cat ? cat.name : "-";
+    }
+
+    // Update dashboard stats
+    function updateDashboardStats(){
+        totalProductsEl.textContent = products.length;
+        const totalStock = products.reduce((sum, p) => sum + (p.stock || 0), 0);
+        totalStockEl.textContent = totalStock;
+        const lowStockCount = products.filter(p => p.stock > 0 && p.stock <= 5).length;
+        lowStockEl.textContent = lowStockCount;
+        const outStockCount = products.filter(p => p.stock <= 0).length;
+        outStockEl.textContent = outStockCount;
+    }
+
+    // Initial check login
+    document.addEventListener("DOMContentLoaded", () => {
+        checkLogin();
+    });
+})();
+</script>
+</body>
+</html>
+
+```
